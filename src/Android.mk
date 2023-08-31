@@ -14,8 +14,8 @@ include $(CLEAR_VARS)
 
 LOCAL_MODULE := makeguids
 LOCAL_C_INCLUDES := $(LOCAL_PATH)/include
-LOCAL_CFLAGS := -DEFIVAR_BUILD_ENVIRONMENT
-LOCAL_SRC_FILES := guid.c makeguids.c
+LOCAL_CFLAGS := -DEFIVAR_BUILD_ENVIRONMENT -Wno-typedef-redefinition
+LOCAL_SRC_FILES := makeguids.c util.c
 LOCAL_LDLIBS := -ldl
 include $(BUILD_HOST_EXECUTABLE)
 
@@ -42,7 +42,6 @@ LIBEFIVAR_SOURCES := \
 	error.c \
 	export.c \
 	guid.c \
-	guids.S \
 	lib.c \
 	vars.c
 
@@ -57,7 +56,7 @@ LOCAL_C_INCLUDES := $(LOCAL_PATH)/include
 LOCAL_EXPORT_C_INCLUDE_DIRS := $(LOCAL_C_INCLUDES) $(LOCAL_C_INCLUDES)/efivar $(local-generated-sources-dir)
 LIBEFIVAR_GUIDS_H := $(local-generated-sources-dir)/efivar/efivar-guids.h
 LOCAL_GENERATED_SOURCES := $(LIBEFIVAR_GUIDS_H) $(local-generated-sources-dir)/guid-symbols.c
-$(LIBEFIVAR_GUIDS_H): PRIVATE_CUSTOM_TOOL = $^ $(addprefix $(dir $(@D)),guids.bin names.bin guid-symbols.c efivar/efivar-guids.h)
+$(LIBEFIVAR_GUIDS_H): PRIVATE_CUSTOM_TOOL = $^ $(addprefix $(dir $(@D)),guid-symbols.c efivar/efivar-guids.h)
 $(LIBEFIVAR_GUIDS_H): $(BUILD_OUT_EXECUTABLES)/makeguids $(LOCAL_PATH)/guids.txt
 	$(transform-generated-source)
 $(lastword $(LOCAL_GENERATED_SOURCES)): $(LIBEFIVAR_GUIDS_H)

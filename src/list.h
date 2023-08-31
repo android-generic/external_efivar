@@ -8,6 +8,12 @@
 
 #include <stdlib.h>
 
+// For Android, because of C99 limitation, we use sort_r instead
+// https://github.com/noporpoise/sort_r
+#ifdef __ANDROID__
+#include "sort_r.h"
+#endif
+
 #define container_of(ptr, type, member)                      \
 	({                                                   \
 		void *__mptr = (void *)(ptr);                \
@@ -149,7 +155,11 @@ list_sort(struct list_head *head,
 		array[i++] = pos;
 	}
 
+#ifdef __ANDROID__
+	sort_r(array, nmemb, sizeof(*array), cmp, state);
+#else
 	qsort_r(array, nmemb, sizeof(*array), cmp, state);
+#endif
 
 	INIT_LIST_HEAD(head);
 	for (i = 0; i < nmemb; i++) {

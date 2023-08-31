@@ -16,6 +16,12 @@
 #include "guid.h"
 #include "util.h"
 
+// For Android, because of C99 limitation, we use sort_r instead
+// https://github.com/noporpoise/sort_r
+#ifdef __ANDROID__
+#include "sort_r.h"
+#endif
+
 struct guidname_offset {
 	efi_guid_t guid;
 	off_t nameoff;
@@ -257,8 +263,13 @@ read_guids_at(const int dirfd, const char * const path,
 	guidnames->nguids = nguids;
 	guidnames->strsz = spos;
 
+#ifdef __ANDROID__
+	sort_r(&guidnames->offsets[0], nguids,
+		sizeof(struct guidname_offset), gnopguidcmp, guidnames);
+#else
 	qsort_r(&guidnames->offsets[0], nguids,
 		sizeof(struct guidname_offset), gnopguidcmp, guidnames);
+#endif
 
 	*guidnamesp = guidnames;
 

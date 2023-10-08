@@ -141,10 +141,8 @@ efi_error_pop(void)
 
 static int efi_verbose;
 static FILE *efi_errlog, *efi_dbglog;
-#ifndef ANDROID
 static int efi_dbglog_fd = -1;
 static intptr_t efi_dbglog_cookie;
-#endif
 static int log_level;
 
 void PUBLIC
@@ -153,7 +151,6 @@ efi_set_loglevel(int level)
 	log_level = level;
 }
 
-#ifndef ANDROID
 static ssize_t
 dbglog_write(void *cookie, const char *buf, size_t size)
 {
@@ -219,7 +216,6 @@ dbglog_close(void *cookie UNUSED)
 	errno = EBADF;
 	return -1;
 }
-#endif
 
 void PUBLIC
 efi_error_clear(void)
@@ -249,7 +245,6 @@ efi_error_fini(void)
 static void CONSTRUCTOR
 efi_error_init(void)
 {
-#ifndef ANDROID
 	ssize_t bytes;
 	cookie_io_functions_t io_funcs = {
 		.write = dbglog_write,
@@ -266,7 +261,6 @@ efi_error_init(void)
 		efi_dbglog_cookie = 0;
 
 	efi_dbglog = fopencookie((void *)efi_dbglog_cookie, "a", io_funcs);
-#endif
 }
 
 FILE PUBLIC *

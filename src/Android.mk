@@ -43,7 +43,8 @@ LIBEFIVAR_SOURCES := \
 	export.c \
 	guid.c \
 	lib.c \
-	vars.c
+	vars.c \
+	portable_fopencookie.c
 
 LIBEFISEC_SOURCES := \
 	sec.c

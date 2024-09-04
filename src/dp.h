@@ -101,9 +101,14 @@ format_vendor_helper(unsigned char *buf, size_t size, char *label,
 		     const_efidp dp)
 {
 	ssize_t off = 0;
-	ssize_t bytes = efidp_node_size(dp)
-			- sizeof (efidp_header)
-			- sizeof (efi_guid_t);
+	ssize_t bytes = efidp_node_size(dp);
+
+	if (SUB(bytes, sizeof (efidp_header), &bytes) ||
+	    SUB(bytes, sizeof (efi_guid_t), &bytes) ||
+	    bytes < 0) {
+		efi_error("bad DP node size");
+		return -1;
+	}
 
 	format(buf, size, off, label, "%s(", label);
 	format_guid(buf, size, off, label, &dp->hw_vendor.vendor_guid);
@@ -123,7 +128,7 @@ format_vendor_helper(unsigned char *buf, size_t size, char *label,
 		uint16_t *_ucs2buf;					\
 		uint32_t _ucs2size = sizeof(uint16_t) * len;		\
 		_ucs2buf = alloca(_ucs2size);				\
-		if (_ucs2buf == NULL)					\
+		if (_ucs2buf == NULL || _ucs2size < sizeof(uint16_t))	\
 			return -1;					\
 		memset(_ucs2buf, '\0', _ucs2size);			\
 		memcpy(_ucs2buf, str, _ucs2size - sizeof(uint16_t));	\

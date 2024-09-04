@@ -60,7 +60,7 @@ find_file(const char * const filepath, char **devicep, char **relpathp)
 		}
 	} while (1);
 
-	mounts = fopen("/proc/self/mounts", "r");
+	mounts = setmntent("/proc/self/mounts", "r");
 	if (mounts == NULL) {
 		efi_error("couldn not open /proc/self/mounts");
 		return -1;
@@ -221,12 +221,7 @@ efi_va_generate_file_device_path_from_esp(uint8_t *buf, ssize_t size,
 		debug("EFIBOOT_ABBREV_EDD10");
 
 	if (options & EFIBOOT_ABBREV_EDD10) {
-		va_list aq;
-		va_copy(aq, ap);
-
-		dev->edd10_devicenum = va_arg(aq, uint32_t);
-
-		va_end(aq);
+		dev->edd10_devicenum = va_arg(ap, uint32_t);
 	}
 
 	if (!(options & (EFIBOOT_ABBREV_FILE|EFIBOOT_ABBREV_HD))

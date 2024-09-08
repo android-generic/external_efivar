@@ -191,7 +191,6 @@ dbglog_write(void *cookie, const char *buf, size_t size)
 	return ret;
 }
 
-#ifndef ANDROID
 static int
 dbglog_seek(void *cookie UNUSED, off_t *offset, int whence)
 {
@@ -204,7 +203,6 @@ dbglog_seek(void *cookie UNUSED, off_t *offset, int whence)
 	*offset = ftell(log);
 	return 0;
 }
-#endif
 
 static int
 dbglog_close(void *cookie UNUSED)
@@ -254,9 +252,7 @@ efi_error_init(void)
 	ssize_t bytes;
 	cookie_io_functions_t io_funcs = {
 		.write = dbglog_write,
-#ifndef ANDROID
 		.seek = dbglog_seek,
-#endif
 		.close = dbglog_close,
 	};
 
